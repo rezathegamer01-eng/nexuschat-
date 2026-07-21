@@ -1,1 +1,92 @@
+name: Build NexusChat Windows .exe
 
+on:
+  push:
+    branches: [main, master]
+  workflow_dispatch: # lets you trigger it manually from GitHub website
+
+jobs:
+  build-windows:
+    runs-on: windows-latest
+
+    steps:
+      # 1 — Check out your code
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # 2 — Install Node.js
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      # 3 — Install pnpm
+      - name: Install pnpm
+        uses: pnpm/action-setup@v3
+        with:
+          version: 9
+
+      # 4 — Cache node_modules for faster builds
+      - name: Get pnpm store path
+        id: pnpm-cache
+        shell: bash
+        run: echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_OUTPUT
+
+      - name: Cache dependencies
+        uses: actions/cache@v4
+        with:
+          path: ${{ steps.pnpm-cache.outputs.STORE_PATH }}
+          key: ${{ runner.os }}-pnpm-${{ hashFiles('**/package.json') }}
+          restore-keys: ${{ runner.os }}-pnpm-
+
+      # 5 — Install all dependencies (no lockfile — we excluded it to keep files < 100)
+      - name: Install dependencies
+        run: pnpm install --no-frozen-lockfile
+
+      # 6 — Build Next.js in standalone mode (needed for Electron)
+      - name: Build Next.js app
+        run: pnpm build
+        env:
+          BUILD_ELECTRON: '1'
+          NODE_ENV: production
+
+      # 7 — Package into Windows .exe installer via electron-builder
+      - name: Build Windows .exe installer
+        run: pnpm exec electron-builder --win --x64
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      # 8 — Upload the installer as a downloadable artifact
+      - name: Upload .exe artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: NexusChat-Windows-Installer
+          path: dist-electron/*.exe
+          retention-days: 30
+
+      # 9 — Also create a GitHub Release with the .exe attached
+      - name: Create GitHub Release
+        if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v1.0.${{ github.run_number }}
+          name: NexusChat v1.0.${{ github.run_number }}
+          body: |
+            ## NexusChat Desktop App — Windows Installer
+
+            ### What's inside
+            - Discord-like chat UI (servers, channels, DMs)
+            - P2P video & voice calls (WebRTC, direct connection)
+            - File / music / video transfer
+            - Screen sharing
+            - E2E encryption badge & network quality indicator
+
+            ### Install
+            1. Download `NexusChat-Setup.exe` below
+            2. Double-click it and follow the installer
+            3. NexusChat appears on your Desktop and Start Menu
+          files: dist-electron/*.exe
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
