@@ -22,10 +22,10 @@ function Header() {
         </svg>
       </div>
       <h1 className="text-3xl font-extrabold text-white mb-2">Get NexusChat for Windows</h1>
-      <p style={{ color: '#96989d', lineHeight: 1.6 }}>
+        <p style={{ color: '#96989d', lineHeight: 1.6 }}>
         No Linux or terminal needed — just a Windows PC and a free GitHub account.
-        The ZIP contains only <strong className="text-white">50 files</strong> (well under
-        GitHub&apos;s 100-file limit). Unzip, drag into GitHub, done.
+        The ZIP has only <strong className="text-white">48 plain text files</strong> — no binaries,
+        no secrets, well under GitHub&apos;s limit. Unzip, drag into GitHub, done.
       </p>
     </div>
   );
@@ -48,7 +48,7 @@ function DownloadZip() {
         </div>
         <div className="flex-1">
           <div className="text-sm font-semibold text-white">nexuschat-source.zip</div>
-          <div className="text-xs" style={{ color: '#96989d' }}>50 files · ~101 KB · under GitHub&apos;s 100-file limit</div>
+          <div className="text-xs" style={{ color: '#96989d' }}>48 text files · ~65 KB · no binaries, safe to upload</div>
         </div>
         <a href="/nexuschat-source.zip" download="nexuschat-source.zip"
           className="px-4 py-2 rounded-lg text-sm font-bold text-white transition-opacity hover:opacity-80"

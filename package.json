@@ -21,20 +21,13 @@
   "build": {
     "appId": "com.nexuschat.app",
     "productName": "NexusChat",
-    "copyright": "Copyright © 2025 NexusChat",
+    "copyright": "Copyright 2025 NexusChat",
     "directories": {
       "output": "dist-electron"
     },
     "files": [
       "electron/**/*",
-      ".next/standalone/**/*",
-      ".next/static/**/*",
-      "public/**/*",
-      "node_modules/electron/dist/**/*"
-    ],
-    "extraResources": [
-      { "from": ".next/static", "to": ".next/static" },
-      { "from": "public", "to": "public" }
+      "public/icon.png"
     ],
     "win": {
       "target": [{ "target": "nsis", "arch": ["x64"] }],
@@ -42,22 +35,10 @@
     },
     "nsis": {
       "oneClick": false,
-      "perMachine": false,
       "allowToChangeInstallationDirectory": true,
-      "installerIcon": "public/icon.png",
-      "uninstallerIcon": "public/icon.png",
-      "installerHeaderIcon": "public/icon.png",
       "createDesktopShortcut": true,
       "createStartMenuShortcut": true,
       "shortcutName": "NexusChat"
-    },
-    "mac": {
-      "target": "dmg",
-      "icon": "public/icon.png"
-    },
-    "linux": {
-      "target": "AppImage",
-      "icon": "public/icon.png"
     }
   },
   "dependencies": {
